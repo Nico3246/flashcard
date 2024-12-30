@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, jsonify
 import random
 from google.cloud import firestore
 import os
+import firebase_admin
+from firebase_admin import credentials, firestore
+
 
 app = Flask(__name__)
 
