@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Flashcards</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Crear Tarjetas</h1>
+        <form id="create-form">
+            <label for="front">Cara Frontal:</label>
+            <input type="text" id="front" name="front" required>
+            <label for="back">Cara Trasera:</label>
+            <input type="text" id="back" name="back" required>
+            <button type="submit">Guardar</button>
+        </form>
+        <button onclick="location.href='/'">Volver</button>
+        <p id="message"></p>
+    </div>
+    <script>
+        document.getElementById("create-form").onsubmit = async function (e) {
+            e.preventDefault();
+            const front = document.getElementById("front").value;
+            const back = document.getElementById("back").value;
+            const response = await fetch("/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ front, back }),
+            });
+            const result = await response.json();
+            document.getElementById("message").textContent = result.message;
+        };
+    </script>
+</body>
+</html>
