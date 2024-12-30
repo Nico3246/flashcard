@@ -1,24 +1,26 @@
 from flask import Flask, render_template, request, jsonify
-import json
 import random
+from google.cloud import firestore
+import os
 
 app = Flask(__name__)
 
-# Archivo para almacenar las tarjetas
-DATA_FILE = "data.json"
+# Configura Firebase
 
-# Función para cargar tarjetas
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/flashcards-f2395-firebase-adminsdk-mw060-41d2f35eec.json"
+
+# Inicializa la base de datos Firestore
+db = firestore.Client()
+flashcards_ref = db.collection('flashcards')
+
+# Función para cargar las tarjetas desde Firestore
 def load_flashcards():
-    try:
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
+    cards = flashcards_ref.stream()
+    return [{'front': card.id, 'back': card.to_dict().get('back')} for card in cards]
 
-# Función para guardar tarjetas
-def save_flashcards(flashcards):
-    with open(DATA_FILE, "w") as f:
-        json.dump(flashcards, f)
+# Función para guardar una nueva tarjeta en Firestore
+def save_flashcard(front, back):
+    flashcards_ref.document(front).set({'back': back})
 
 @app.route("/")
 def index():
@@ -29,9 +31,7 @@ def create():
     if request.method == "POST":
         front = request.form["front"]
         back = request.form["back"]
-        flashcards = load_flashcards()
-        flashcards.append({"front": front, "back": back})
-        save_flashcards(flashcards)
+        save_flashcard(front, back)
         return jsonify({"message": "Flashcard created successfully!"})
     return render_template("create.html")
 
