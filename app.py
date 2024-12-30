@@ -1,30 +1,28 @@
-from flask import Flask, render_template, request, jsonify
-import random
-from google.cloud import firestore
-import os
 import firebase_admin
 from firebase_admin import credentials, firestore
-
+import random
+from flask import Flask, render_template, request, jsonify
+import os
 
 app = Flask(__name__)
 
-# Configura Firebase
-
-cred = credentials.Certificate('path_to_your_firebase_credentials.json')
+# Inicializar Firebase
+cred = credentials.Certificate('config/flashcards-f2395-firebase-adminsdk-mw060-41d2f35eec.json')
 firebase_admin.initialize_app(cred)
 
-# Inicializa la base de datos Firestore
-db = firestore.Client()
-flashcards_ref = db.collection('flashcards')
+# Conectar a Firestore (base de datos de Firebase)
+db = firestore.client()
 
 # Función para cargar las tarjetas desde Firestore
 def load_flashcards():
-    cards = flashcards_ref.stream()
-    return [{'front': card.id, 'back': card.to_dict().get('back')} for card in cards]
+    flashcards_ref = db.collection('flashcards')
+    docs = flashcards_ref.stream()
+    return [{'front': doc.to_dict()['front'], 'back': doc.to_dict()['back']} for doc in docs]
 
 # Función para guardar una nueva tarjeta en Firestore
 def save_flashcard(front, back):
-    flashcards_ref.document(front).set({'back': back})
+    flashcards_ref = db.collection('flashcards')
+    flashcards_ref.add({'front': front, 'back': back})
 
 @app.route("/")
 def index():
