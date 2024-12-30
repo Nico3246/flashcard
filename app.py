@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 # Configura Firebase
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/flashcards-f2395-firebase-adminsdk-mw060-41d2f35eec.json"
+cred = credentials.Certificate('path_to_your_firebase_credentials.json')
+firebase_admin.initialize_app(cred)
 
 # Inicializa la base de datos Firestore
 db = firestore.Client()
