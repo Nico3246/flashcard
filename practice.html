@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practicar Flashcards</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Practicar</h1>
+        {% if flashcard %}
+        <div class="card" onclick="this.classList.toggle('flipped')">
+            <div class="front">{{ flashcard['front'] }}</div>
+            <div class="back">{{ flashcard['back'] }}</div>
+        </div>
+        {% else %}
+        <p>No hay tarjetas disponibles. ¡Crea algunas primero!</p>
+        {% endif %}
+        <button onclick="location.href='/'">Volver</button>
+    </div>
+</body>
+</html>
